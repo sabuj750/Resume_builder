@@ -3,40 +3,53 @@ import ModernTemplate from "./ModernTemplate";
 import ClassicTemplate from "./ClassicTemplate";
 import MinimalImageTemplate from "./MinimalImageTemplate";
 import MinimalTemplate from "./MinimalTemplate";
+
 const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
-  const renderTemplete = () => {
+  const renderTemplate = () => {
     switch (template) {
       case "modern":
         return <ModernTemplate data={data} accentColor={accentColor} />;
-        break;
       case "minimal":
         return <MinimalTemplate data={data} accentColor={accentColor} />;
-        break;
       case "minimal-image":
         return <MinimalImageTemplate data={data} accentColor={accentColor} />;
-        break;
       default:
         return <ClassicTemplate data={data} accentColor={accentColor} />;
-        break;
     }
   };
+
   return (
-    <div className="w-full bg-gray-100">
+    // NOTE: no `relative` / transforms on these wrappers, so the print rules
+    // below (which position #resume-preview absolutely) keep working.
+    <div className="w-full rounded-2xl bg-gradient-to-br from-slate-100 via-gray-100 to-green-50 p-3 sm:p-5 print:p-0 print:bg-transparent">
       <div
         id="resume-preview"
-        className={
-          "border border-gray-200 print:shadow-none print:border-none" + classes
-        }
+        className={`overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl shadow-slate-300/50 print:shadow-none print:border-none print:rounded-none ${classes}`}
       >
-        {renderTemplete()}
+        {/* re-plays a soft entrance whenever the template changes */}
+        <div key={template} className="rp-in">
+          {renderTemplate()}
+        </div>
       </div>
-      <style jsx>
+
+      <style>
         {`
+          @keyframes rp-in {
+            from { opacity: 0; transform: translateY(10px) scale(0.99); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          /* "backwards" fill: no transform is left behind after the animation */
+          .rp-in { animation: rp-in .5s cubic-bezier(.22,1,.36,1) backwards; }
+          @media (prefers-reduced-motion: reduce) {
+            .rp-in { animation: none !important; }
+          }
+
           @page {
             size: letter;
             margin: 0;
           }
           @media print {
+            .rp-in { animation: none !important; transform: none !important; }
             html,
             body {
               width: 8.5in;
@@ -58,8 +71,9 @@ const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
               height: auto;
               margin: 0;
               padding: 0;
-              box-shadow:none !important;
-              border:none !important;
+              box-shadow: none !important;
+              border: none !important;
+              border-radius: 0 !important;
             }
           }
         `}

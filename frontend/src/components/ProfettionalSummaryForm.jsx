@@ -1,52 +1,70 @@
-import React, { useState } from 'react';
-import { Sparkles, Loader2 } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import api from '../configs/api';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { Sparkles, Loader2, Lightbulb } from "lucide-react";
+import { useSelector } from "react-redux";
+import api from "../configs/api";
+import toast from "react-hot-toast";
 
-const ProfessionalSummaryForm = ({ data, onChange , setResumeData }) => {
+const css = `
+@keyframes ps-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ps-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.ps-up { animation: ps-up .5s cubic-bezier(.22,1,.36,1) both; animation-delay: var(--d, 0ms); }
+.ps-ai { background-size: 200% 100%; }
+.ps-ai:not(:disabled):hover { animation: ps-shimmer 1.6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .ps-up, .ps-ai:hover { animation: none !important; opacity: 1 !important; transform: none !important; } }
+`;
+
+const ProfessionalSummaryForm = ({ data, onChange }) => {
   const [isEnhancing, setIsEnhancing] = useState(false);
   const charCount = data?.length || 0;
   const maxChars = 500;
+  const percent = Math.min((charCount / maxChars) * 100, 100);
 
-  const {token} = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
 
-
-  // Simplified handler: Simulates the animation without the API call
   const handleAiEnhance = async () => {
-    try{
+    try {
       setIsEnhancing(true);
       const prompt = `enhance my professional summary: "${data}"`;
-      const response = await api.post('/api/ai/enhance-pro-sum/', {userContent : prompt} , {headers : {Authorization : token}});
+      const response = await api.post(
+        "/api/ai/enhance-pro-sum/",
+        { userContent: prompt },
+        { headers: { Authorization: token } },
+      );
       onChange(response.data.enhancedContent);
       toast.success("Summary enhanced!");
-    }catch(err){
+    } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong");
-    }finally{
-      setTimeout(() => {
-        setIsEnhancing(false);
-      }, 2000);
+    } finally {
+      setIsEnhancing(false);
     }
   };
 
+  const barColor =
+    percent > 90
+      ? "from-orange-400 to-red-500"
+      : percent > 60
+        ? "from-yellow-400 to-green-500"
+        : "from-green-400 to-emerald-600";
+
   return (
-    <div className="space-y-4">
-      {/* Header Section */}
-      <div className="flex items-start justify-between gap-4">
+    <div className="space-y-5">
+      <style>{css}</style>
+
+      {/* Header */}
+      <div className="ps-up flex items-start justify-between gap-4">
         <div>
-          <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-gray-900">
             Professional Summary
           </h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Briefly summarize your professional background and key skills.
           </p>
         </div>
 
-        {/* The Animated Button */}
         <button
           onClick={handleAiEnhance}
           disabled={isEnhancing || !data?.trim()}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg whitespace-nowrap"
+          className="ps-ai group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg shadow-md shadow-purple-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-300 disabled:shadow-none disabled:translate-y-0 disabled:cursor-not-allowed transition-all duration-300 whitespace-nowrap"
         >
           {isEnhancing ? (
             <>
@@ -55,38 +73,51 @@ const ProfessionalSummaryForm = ({ data, onChange , setResumeData }) => {
             </>
           ) : (
             <>
-              <Sparkles className="size-4" />
+              <Sparkles className="size-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
               AI Enhance
             </>
           )}
         </button>
       </div>
 
-      {/* Input Section */}
-      <div className="mt-6">
+      {/* Input */}
+      <div className="ps-up" style={{ "--d": "100ms" }}>
         <div className="relative">
           <textarea
             value={data || ""}
             onChange={(e) => onChange(e.target.value)}
             rows={7}
             maxLength={maxChars}
-            className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none text-sm text-gray-900 placeholder:text-gray-400"
+            className={`w-full p-4 pb-9 border rounded-xl bg-white/80 outline-none transition-all duration-300 resize-none text-sm leading-relaxed text-gray-900 placeholder:text-gray-400 hover:border-gray-300 focus:border-green-400 focus:ring-4 focus:ring-green-100 ${
+              isEnhancing
+                ? "animate-pulse border-purple-300 ring-4 ring-purple-100"
+                : "border-gray-200"
+            }`}
             placeholder="Write a compelling professional summary..."
           />
-          <div className="absolute bottom-3 right-3 text-xs text-gray-400">
-            {charCount}/{maxChars}
+
+          {/* character counter with progress bar */}
+          <div className="absolute bottom-3 left-4 right-4 flex items-center gap-3">
+            <div className="h-1 flex-1 overflow-hidden rounded-full bg-gray-100">
+              <div
+                className={`h-full rounded-full bg-gradient-to-r ${barColor} transition-all duration-500 ease-out`}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+            <span className="text-xs tabular-nums text-gray-400">
+              {charCount}/{maxChars}
+            </span>
           </div>
         </div>
-        
-        {/* Info Tip Box */}
-        <div className="mt-3 flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex-shrink-0 mt-0.5">
-            <svg className="size-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
+
+        {/* Tip */}
+        <div className="mt-4 flex items-start gap-3 p-3.5 bg-gradient-to-br from-green-50 to-white border border-green-200 rounded-xl transition-shadow duration-300 hover:shadow-md hover:shadow-green-100">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700">
+            <Lightbulb className="size-4" />
           </div>
-          <p className="text-xs text-blue-800 leading-relaxed">
-            <strong>Tip:</strong> Keep it concise and focus on your most relevant achievements.
+          <p className="text-xs text-green-900 leading-relaxed">
+            <strong>Tip:</strong> Keep it concise and focus on your most
+            relevant achievements.
           </p>
         </div>
       </div>
