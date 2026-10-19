@@ -7,12 +7,20 @@ import resumeRouter from './routes/resumeRoutes.js';
 import aiRouter from './routes/aiRoutes.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
+const allowedOrigins = [
+    'https://resume-builder-nu-tawny.vercel.app',
+    'http://localhost:5173',
+];
 
 // Database connection
 await connectDB();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        callback(null, !origin || allowedOrigins.includes(origin));
+    },
+}));
 
 app.get('/', (req , res) => res.send("Hello World!"));
 app.use('/api/users', userRouter);
