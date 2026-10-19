@@ -1,7 +1,7 @@
 import React from "react";
 import { Plus, Briefcase, Trash2, Sparkles, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
-import api from "../configs/api";
+import api from "../configs/api.js";
 import toast from "react-hot-toast";
 import { useState } from "react";
 

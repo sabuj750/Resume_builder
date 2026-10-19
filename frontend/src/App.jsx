@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Layout from "./pages/Layout";
-import Dashboard from "./pages/Dashboard";
-import ResumeBuilder from "./pages/ResumeBuilder";
-import Preview from "./pages/Preview";
-import Login from "./pages/Login";
+import Home from "./pages/Home.jsx";
+import Layout from "./pages/Layout.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import ResumeBuilder from "./pages/ResumeBuilder.jsx";
+import Preview from "./pages/Preview.jsx";
+import Login from "./pages/Login.jsx";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import api from "./configs/api";
-import { login } from "../app/features/authSlice";
-import { setLoading } from "../app/features/authSlice";
+import api from "./configs/api.js";
+import { login } from "../app/features/authSlice.js";
+import { setLoading } from "../app/features/authSlice.js";
 const App = () => {
   const dispatch = useDispatch();
 

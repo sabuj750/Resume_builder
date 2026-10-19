@@ -1,10 +1,10 @@
 import React from 'react'
-import Banner from "../components/home/Banner"
-import Hero from "../components/home/Hero"
-import Features from "../components/home/Features"
-import Testimonials from '../components/home/Testimonials'
-import Cta from "../components/home/Cta"
-import Footer from '../components/home/Footer'
+import Banner from "../components/home/Banner.jsx"
+import Hero from "../components/home/Hero.jsx"
+import Features from "../components/home/Features.jsx"
+import Testimonials from '../components/home/Testimonials.jsx'
+import Cta from "../components/home/Cta.jsx"
+import Footer from '../components/home/Footer.jsx'
 const Home = () => {
   return (
     <div>

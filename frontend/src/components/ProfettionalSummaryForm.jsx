@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Sparkles, Loader2, Lightbulb } from "lucide-react";
 import { useSelector } from "react-redux";
-import api from "../configs/api";
+import api from "../configs/api.js";
 import toast from "react-hot-toast";
 
 const css = `

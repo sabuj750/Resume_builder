@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
-import { logout } from "../../app/features/authSlice";
+import { logout } from "../../app/features/authSlice.js";
 
 const css = `
 @keyframes nav-drop { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: translateY(0); } }
