@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Reveal from "./Reveal.jsx";
 
 const css = `
@@ -36,8 +37,8 @@ const Cta = () => {
             community.
           </p>
 
-          <a
-            href="/app"
+          <Link
+            to="/app"
             className="cta-ring group relative overflow-hidden flex items-center gap-2 rounded-lg py-3 px-8 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg shadow-green-300/60 hover:shadow-xl hover:shadow-green-400/60 hover:-translate-y-1 active:scale-95 transition-all duration-300"
           >
             <span className="cta-shine absolute inset-y-0 left-0 w-1/3 bg-white/30" />
@@ -57,7 +58,7 @@ const Cta = () => {
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
-          </a>
+          </Link>
         </div>
       </Reveal>
     </div>
